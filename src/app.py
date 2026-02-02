@@ -1,10 +1,22 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, request, jsonify, render_template
+from flasgger import Swagger
 import sqlite3
 import json
 
 app = Flask(__name__)
 DATABASE = 'app.db'
+
+# Configure Flasgger for OpenAPI documentation
+swagger = Swagger(app, template={
+    "swagger": "2.0",
+    "info": {
+        "title": "Awesome Recipe Cookbook API",
+        "description": "API for managing recipes, ingredients, and tags",
+        "version": "1.0.0"
+    },
+    "basePath": "/api"
+})
 
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
@@ -306,6 +318,48 @@ def recipe_detail(id):
 
 @app.route('/api', methods=['GET'])
 def api_overview():
+    """
+    API Overview
+    ---
+    tags:
+      - API
+    responses:
+      200:
+        description: Returns all available API endpoints
+        schema:
+          type: object
+          properties:
+            create_user_url:
+              type: string
+              description: URL for creating a new user
+            current_user_url:
+              type: string
+              description: URL for getting current user information
+            user_token_url:
+              type: string
+              description: URL for getting user authentication token
+            recipes_url:
+              type: string
+              description: URL for listing recipes with optional filters
+            recipe_url:
+              type: string
+              description: URL for getting a specific recipe
+            recipe_image_url:
+              type: string
+              description: URL for uploading an image for a recipe
+            ingredients_url:
+              type: string
+              description: URL for listing ingredients
+            ingredient_url:
+              type: string
+              description: URL for getting a specific ingredient
+            tags_url:
+              type: string
+              description: URL for listing tags
+            tag_url:
+              type: string
+              description: URL for getting a specific tag
+    """
     print('Route invoked: GET /api')
     routes = {
         'create_user_url': 'http://localhost:3000/api/user/create/',
@@ -323,6 +377,48 @@ def api_overview():
 
 @app.route('/api/user/create/', methods=['POST'])
 def user_create():
+    """
+    Create User
+    ---
+    tags:
+      - Users
+    consumes:
+      - application/json
+    produces:
+      - application/json
+    parameters:
+      - in: body
+        name: user
+        schema:
+          type: object
+          required:
+            - email
+            - password
+            - name
+          properties:
+            email:
+              type: string
+              format: email
+              description: User's email address
+            password:
+              type: string
+              description: User's password
+            name:
+              type: string
+              description: User's full name
+    responses:
+      201:
+        description: User created successfully
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+              description: User's email address
+            name:
+              type: string
+              description: User's full name
+    """
     print('Route invoked: POST /api/user/create/')
     data = request.get_json()
     email = data.get('email')
@@ -346,6 +442,26 @@ def user_create():
 
 @app.route('/api/user/me/', methods=['GET'])
 def user_me_retrieve():
+    """
+    Get Current User
+    ---
+    tags:
+      - Users
+    produces:
+      - application/json
+    responses:
+      200:
+        description: Current user information
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+              description: User's email address
+            name:
+              type: string
+              description: User's full name
+    """
     print('Route invoked: GET /api/user/me/')
     return jsonify({
         'email': 'user@example.com',
@@ -354,6 +470,44 @@ def user_me_retrieve():
 
 @app.route('/api/user/me/', methods=['PUT'])
 def user_me_update():
+    """
+    Update Current User
+    ---
+    tags:
+      - Users
+    consumes:
+      - application/json
+    produces:
+      - application/json
+    parameters:
+      - in: body
+        name: user
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+              format: email
+              description: User's email address
+            name:
+              type: string
+              description: User's full name
+            password:
+              type: string
+              description: User's password
+    responses:
+      200:
+        description: User updated successfully
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+              description: User's email address
+            name:
+              type: string
+              description: User's full name
+    """
     print('Route invoked: PUT /api/user/me/')
     data = request.get_json()
     email = data.get('email')
@@ -367,6 +521,41 @@ def user_me_update():
 
 @app.route('/api/user/me/', methods=['PATCH'])
 def user_me_partial_update():
+    """
+    Partially Update Current User
+    ---
+    tags:
+      - Users
+    consumes:
+      - application/json
+    produces:
+      - application/json
+    parameters:
+      - in: body
+        name: user
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+              format: email
+              description: User's email address
+            name:
+              type: string
+              description: User's full name
+    responses:
+      200:
+        description: User partially updated successfully
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+              description: User's email address
+            name:
+              type: string
+              description: User's full name
+    """
     print('Route invoked: PATCH /api/user/me/')
     data = request.get_json()
 
@@ -385,6 +574,44 @@ def user_me_partial_update():
 
 @app.route('/api/user/token/', methods=['POST'])
 def user_token_create():
+    """
+    Create User Token
+    ---
+    tags:
+      - Users
+    consumes:
+      - application/json
+    produces:
+      - application/json
+    parameters:
+      - in: body
+        name: credentials
+        schema:
+          type: object
+          required:
+            - email
+            - password
+          properties:
+            email:
+              type: string
+              format: email
+              description: User's email address
+            password:
+              type: string
+              description: User's password
+    responses:
+      200:
+        description: Authentication token created
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+              description: User's email address
+            password:
+              type: string
+              description: User's password
+    """
     print('Route invoked: POST /api/user/token/')
     data = request.get_json()
     email = data.get('email')
@@ -397,6 +624,74 @@ def user_token_create():
 
 @app.route('/api/recipe/recipes/', methods=['GET'])
 def recipe_recipes_list():
+    """
+    List Recipes
+    ---
+    tags:
+      - Recipes
+    produces:
+      - application/json
+    parameters:
+      - in: query
+        name: ingredients
+        type: string
+        description: Filter recipes by ingredients (comma-separated IDs)
+      - in: query
+        name: tags
+        type: string
+        description: Filter recipes by tags (comma-separated IDs)
+    responses:
+      200:
+        description: List of recipes
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Recipe ID
+              title:
+                type: string
+                description: Recipe title
+              time_minutes:
+                type: integer
+                description: Time to prepare in minutes
+              price:
+                type: string
+                description: Price of the recipe
+              link:
+                type: string
+                description: URL link to the recipe
+              ingredients:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Ingredient ID
+                    name:
+                      type: string
+                      description: Ingredient name
+                    amount:
+                      type: string
+                      description: Amount of ingredient
+                    unit:
+                      type: string
+                      description: Unit of measurement
+              tags:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Tag ID
+                    name:
+                      type: string
+                      description: Tag name
+    """
     print('Route invoked: GET /api/recipe/recipes/')
     ingredients = request.args.get('ingredients')
     tags = request.args.get('tags')
@@ -437,6 +732,105 @@ def recipe_recipes_list():
 
 @app.route('/api/recipe/recipes/', methods=['POST'])
 def recipe_recipes_create():
+    """
+    Create Recipe
+    ---
+    tags:
+      - Recipes
+    consumes:
+      - application/json
+    produces:
+      - application/json
+    parameters:
+      - in: body
+        name: recipe
+        schema:
+          type: object
+          required:
+            - title
+            - time_minutes
+            - price
+          properties:
+            title:
+              type: string
+              description: Recipe title
+            time_minutes:
+              type: integer
+              description: Time to prepare in minutes
+            price:
+              type: string
+              description: Price of the recipe
+            link:
+              type: string
+              description: URL link to the recipe
+            description:
+              type: string
+              description: Detailed recipe description
+            tags:
+              type: array
+              items:
+                type: integer
+              description: List of tag IDs
+            ingredients:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Ingredient ID
+                  amount:
+                    type: string
+                    description: Amount of ingredient
+                  unit:
+                    type: string
+                    description: Unit of measurement
+              description: List of ingredients with amounts
+    responses:
+      201:
+        description: Recipe created successfully
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Recipe ID
+            title:
+              type: string
+              description: Recipe title
+            time_minutes:
+              type: integer
+              description: Time to prepare in minutes
+            price:
+              type: string
+              description: Price of the recipe
+            link:
+              type: string
+              description: URL link to the recipe
+            description:
+              type: string
+              description: Detailed recipe description
+            tags:
+              type: array
+              items:
+                type: integer
+              description: List of tag IDs
+            ingredients:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Ingredient ID
+                  amount:
+                    type: string
+                    description: Amount of ingredient
+                  unit:
+                    type: string
+                    description: Unit of measurement
+              description: List of ingredients with amounts
+    """
     print('Route invoked: POST /api/recipe/recipes/')
     data = request.get_json()
 
@@ -453,6 +847,72 @@ def recipe_recipes_create():
 
 @app.route('/api/recipe/recipes/<int:id>/', methods=['GET'])
 def recipe_recipes_retrieve(id):
+    """
+    Get Recipe
+    ---
+    tags:
+      - Recipes
+    produces:
+      - application/json
+    parameters:
+      - in: path
+        name: id
+        type: integer
+        required: true
+        description: Recipe ID
+    responses:
+      200:
+        description: Recipe details
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Recipe ID
+            title:
+              type: string
+              description: Recipe title
+            time_minutes:
+              type: integer
+              description: Time to prepare in minutes
+            price:
+              type: string
+              description: Price of the recipe
+            link:
+              type: string
+              description: URL link to the recipe
+            description:
+              type: string
+              description: Detailed recipe description
+            ingredients:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Ingredient ID
+                  name:
+                    type: string
+                    description: Ingredient name
+                  amount:
+                    type: string
+                    description: Amount of ingredient
+                  unit:
+                    type: string
+                    description: Unit of measurement
+            tags:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Tag ID
+                  name:
+                    type: string
+                    description: Tag name
+    """
     print('Route invoked: GET /api/recipe/recipes/<int:id>/')
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -488,6 +948,110 @@ def recipe_recipes_retrieve(id):
 
 @app.route('/api/recipe/recipes/<int:id>/', methods=['PUT'])
 def recipe_recipes_update(id):
+    """
+    Update Recipe
+    ---
+    tags:
+      - Recipes
+    consumes:
+      - application/json
+    produces:
+      - application/json
+    parameters:
+      - in: path
+        name: id
+        type: integer
+        required: true
+        description: Recipe ID
+      - in: body
+        name: recipe
+        schema:
+          type: object
+          required:
+            - title
+            - time_minutes
+            - price
+          properties:
+            title:
+              type: string
+              description: Recipe title
+            time_minutes:
+              type: integer
+              description: Time to prepare in minutes
+            price:
+              type: string
+              description: Price of the recipe
+            link:
+              type: string
+              description: URL link to the recipe
+            description:
+              type: string
+              description: Detailed recipe description
+            tags:
+              type: array
+              items:
+                type: integer
+              description: List of tag IDs
+            ingredients:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Ingredient ID
+                  amount:
+                    type: string
+                    description: Amount of ingredient
+                  unit:
+                    type: string
+                    description: Unit of measurement
+              description: List of ingredients with amounts
+    responses:
+      200:
+        description: Recipe updated successfully
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Recipe ID
+            title:
+              type: string
+              description: Recipe title
+            time_minutes:
+              type: integer
+              description: Time to prepare in minutes
+            price:
+              type: string
+              description: Price of the recipe
+            link:
+              type: string
+              description: URL link to the recipe
+            description:
+              type: string
+              description: Detailed recipe description
+            tags:
+              type: array
+              items:
+                type: integer
+              description: List of tag IDs
+            ingredients:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Ingredient ID
+                  amount:
+                    type: string
+                    description: Amount of ingredient
+                  unit:
+                    type: string
+                    description: Unit of measurement
+              description: List of ingredients with amounts
+    """
     print('Route invoked: PUT /api/recipe/recipes/<int:id>/')
     data = request.get_json()
 
@@ -504,6 +1068,106 @@ def recipe_recipes_update(id):
 
 @app.route('/api/recipe/recipes/<int:id>/', methods=['PATCH'])
 def recipe_recipes_partial_update(id):
+    """
+    Partially Update Recipe
+    ---
+    tags:
+      - Recipes
+    consumes:
+      - application/json
+    produces:
+      - application/json
+    parameters:
+      - in: path
+        name: id
+        type: integer
+        required: true
+        description: Recipe ID
+      - in: body
+        name: recipe
+        schema:
+          type: object
+          properties:
+            title:
+              type: string
+              description: Recipe title
+            time_minutes:
+              type: integer
+              description: Time to prepare in minutes
+            price:
+              type: string
+              description: Price of the recipe
+            link:
+              type: string
+              description: URL link to the recipe
+            description:
+              type: string
+              description: Detailed recipe description
+            tags:
+              type: array
+              items:
+                type: integer
+              description: List of tag IDs
+            ingredients:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Ingredient ID
+                  amount:
+                    type: string
+                    description: Amount of ingredient
+                  unit:
+                    type: string
+                    description: Unit of measurement
+              description: List of ingredients with amounts
+    responses:
+      200:
+        description: Recipe partially updated successfully
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Recipe ID
+            title:
+              type: string
+              description: Recipe title
+            time_minutes:
+              type: integer
+              description: Time to prepare in minutes
+            price:
+              type: string
+              description: Price of the recipe
+            link:
+              type: string
+              description: URL link to the recipe
+            description:
+              type: string
+              description: Detailed recipe description
+            tags:
+              type: array
+              items:
+                type: integer
+              description: List of tag IDs
+            ingredients:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Ingredient ID
+                  amount:
+                    type: string
+                    description: Amount of ingredient
+                  unit:
+                    type: string
+                    description: Unit of measurement
+              description: List of ingredients with amounts
+    """
     print('Route invoked: PATCH /api/recipe/recipes/<int:id>/')
     data = request.get_json()
 
@@ -522,11 +1186,59 @@ def recipe_recipes_partial_update(id):
 
 @app.route('/api/recipe/recipes/<int:id>/', methods=['DELETE'])
 def recipe_recipes_destroy(id):
+    """
+    Delete Recipe
+    ---
+    tags:
+      - Recipes
+    parameters:
+      - in: path
+        name: id
+        type: integer
+        required: true
+        description: Recipe ID
+    responses:
+      204:
+        description: Recipe deleted successfully
+    """
     print('Route invoked: DELETE /api/recipe/recipes/<int:id>/')
     return '', 204
 
 @app.route('/api/recipe/recipes/<int:id>/upload-image/', methods=['POST'])
 def recipe_recipes_upload_image(id):
+    """
+    Upload Recipe Image
+    ---
+    tags:
+      - Recipes
+    consumes:
+      - multipart/form-data
+    produces:
+      - application/json
+    parameters:
+      - in: path
+        name: id
+        type: integer
+        required: true
+        description: Recipe ID
+      - in: formData
+        name: image
+        type: file
+        required: true
+        description: Image file to upload
+    responses:
+      200:
+        description: Image uploaded successfully
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Recipe ID
+            image:
+              type: string
+              description: URL of the uploaded image
+    """
     print('Route invoked: POST /api/recipe/recipes/<int:id>/upload-image/')
     return jsonify({
         'id': id,
@@ -535,6 +1247,33 @@ def recipe_recipes_upload_image(id):
 
 @app.route('/api/recipe/ingredients/', methods=['GET'])
 def recipe_ingredients_list():
+    """
+    List Ingredients
+    ---
+    tags:
+      - Ingredients
+    produces:
+      - application/json
+    parameters:
+      - in: query
+        name: assigned_only
+        type: string
+        description: Filter to show only ingredients assigned to recipes
+    responses:
+      200:
+        description: List of ingredients
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Ingredient ID
+              name:
+                type: string
+                description: Ingredient name
+    """
     print('Route invoked: GET /api/recipe/ingredients/')
     assigned_only = request.args.get('assigned_only')
 
@@ -549,6 +1288,44 @@ def recipe_ingredients_list():
 
 @app.route('/api/recipe/ingredients/<int:id>/', methods=['PUT'])
 def recipe_ingredients_update(id):
+    """
+    Update Ingredient
+    ---
+    tags:
+      - Ingredients
+    consumes:
+      - application/json
+    produces:
+      - application/json
+    parameters:
+      - in: path
+        name: id
+        type: integer
+        required: true
+        description: Ingredient ID
+      - in: body
+        name: ingredient
+        schema:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              description: Ingredient name
+    responses:
+      200:
+        description: Ingredient updated successfully
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Ingredient ID
+            name:
+              type: string
+              description: Ingredient name
+    """
     print('Route invoked: PUT /api/recipe/ingredients/<int:id>/')
     data = request.get_json()
 
@@ -559,6 +1336,42 @@ def recipe_ingredients_update(id):
 
 @app.route('/api/recipe/ingredients/<int:id>/', methods=['PATCH'])
 def recipe_ingredients_partial_update(id):
+    """
+    Partially Update Ingredient
+    ---
+    tags:
+      - Ingredients
+    consumes:
+      - application/json
+    produces:
+      - application/json
+    parameters:
+      - in: path
+        name: id
+        type: integer
+        required: true
+        description: Ingredient ID
+      - in: body
+        name: ingredient
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Ingredient name
+    responses:
+      200:
+        description: Ingredient partially updated successfully
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Ingredient ID
+            name:
+              type: string
+              description: Ingredient name
+    """
     print('Route invoked: PATCH /api/recipe/ingredients/<int:id>/')
     data = request.get_json()
 
@@ -569,11 +1382,53 @@ def recipe_ingredients_partial_update(id):
 
 @app.route('/api/recipe/ingredients/<int:id>/', methods=['DELETE'])
 def recipe_ingredients_destroy(id):
+    """
+    Delete Ingredient
+    ---
+    tags:
+      - Ingredients
+    parameters:
+      - in: path
+        name: id
+        type: integer
+        required: true
+        description: Ingredient ID
+    responses:
+      204:
+        description: Ingredient deleted successfully
+    """
     print('Route invoked: DELETE /api/recipe/ingredients/<int:id>/')
     return '', 204
 
 @app.route('/api/recipe/tags/', methods=['GET'])
 def recipe_tags_list():
+    """
+    List Tags
+    ---
+    tags:
+      - Tags
+    produces:
+      - application/json
+    parameters:
+      - in: query
+        name: assigned_only
+        type: string
+        description: Filter to show only tags assigned to recipes
+    responses:
+      200:
+        description: List of tags
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Tag ID
+              name:
+                type: string
+                description: Tag name
+    """
     print('Route invoked: GET /api/recipe/tags/')
     assigned_only = request.args.get('assigned_only')
 
@@ -588,6 +1443,44 @@ def recipe_tags_list():
 
 @app.route('/api/recipe/tags/<int:id>/', methods=['PUT'])
 def recipe_tags_update(id):
+    """
+    Update Tag
+    ---
+    tags:
+      - Tags
+    consumes:
+      - application/json
+    produces:
+      - application/json
+    parameters:
+      - in: path
+        name: id
+        type: integer
+        required: true
+        description: Tag ID
+      - in: body
+        name: tag
+        schema:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              description: Tag name
+    responses:
+      200:
+        description: Tag updated successfully
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Tag ID
+            name:
+              type: string
+              description: Tag name
+    """
     print('Route invoked: PUT /api/recipe/tags/<int:id>/')
     data = request.get_json()
 
@@ -598,6 +1491,42 @@ def recipe_tags_update(id):
 
 @app.route('/api/recipe/tags/<int:id>/', methods=['PATCH'])
 def recipe_tags_partial_update(id):
+    """
+    Partially Update Tag
+    ---
+    tags:
+      - Tags
+    consumes:
+      - application/json
+    produces:
+      - application/json
+    parameters:
+      - in: path
+        name: id
+        type: integer
+        required: true
+        description: Tag ID
+      - in: body
+        name: tag
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Tag name
+    responses:
+      200:
+        description: Tag partially updated successfully
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Tag ID
+            name:
+              type: string
+              description: Tag name
+    """
     print('Route invoked: PATCH /api/recipe/tags/<int:id>/')
     data = request.get_json()
 
@@ -608,6 +1537,21 @@ def recipe_tags_partial_update(id):
 
 @app.route('/api/recipe/tags/<int:id>/', methods=['DELETE'])
 def recipe_tags_destroy(id):
+    """
+    Delete Tag
+    ---
+    tags:
+      - Tags
+    parameters:
+      - in: path
+        name: id
+        type: integer
+        required: true
+        description: Tag ID
+    responses:
+      204:
+        description: Tag deleted successfully
+    """
     print('Route invoked: DELETE /api/recipe/tags/<int:id>/')
     return '', 204
 
