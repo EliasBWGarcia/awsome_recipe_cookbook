@@ -14,3 +14,6 @@ This is the "Awsome recipe cookbook" repository. It is not meant for production 
 
 ---
 ## ⚠️  SECURITY VULNERABILITIES - EDUCATIONAL PURPOSE ONLY ⚠️
+
+
+---
