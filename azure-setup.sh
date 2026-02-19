@@ -7,7 +7,7 @@ set -e  # Exit on any error
 
 # Configuration variables - CUSTOMIZE THESE
 RESOURCE_GROUP="recipe-cookbook-rg"
-LOCATION="westeurope"  # Change to your preferred region (e.g., "eastus", "northeurope")
+LOCATION="norwayeast"  # Change to your preferred region (e.g., "eastus", "northeurope")
 VM_NAME="recipe-cookbook-vm"
 VM_SIZE="Standard_B1s"  # Change to "Standard_B2s" for better performance
 ADMIN_USERNAME="azureuser"
