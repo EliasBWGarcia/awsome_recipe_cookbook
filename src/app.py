@@ -1555,6 +1555,26 @@ def recipe_tags_destroy(id):
     print('Route invoked: DELETE /api/recipe/tags/<int:id>/')
     return '', 204
 
+@app.route('/api/recipe/tags/<int:id>/', methods=['DELETE'])
+def recipe_tags_destroy_TEST(id):
+    """
+    Delete Tag
+    ---
+    tags:
+      - Tags
+    parameters:
+      - in: path
+        name: id
+        type: integer
+        required: true
+        description: Tag ID
+    responses:
+      204:
+        description: Tag deleted successfully
+    """
+    print('Route invoked: DELETE /api/recipe/tags/<int:id>/')
+    return '', 204
+
 if __name__ == '__main__':
     init_db()
     app.run(host='0.0.0.0', port=3010, debug=True)
