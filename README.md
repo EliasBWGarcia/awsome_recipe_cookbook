@@ -5,10 +5,8 @@ This is the "Awsome recipe cookbook" repository. It is not meant for production 
 
 ## Continnouos Delivery (CD) branch
 
-You're currently on the **CD** branch, which demonstrates deployment through github actions to Azure VM:
+You're currently on the **CD** branch, which demonstrates continuous delivery and continuous deployment through github actions, pacgages deployment to Azure VM:
 
-
-more will come here
 
 
 ---
