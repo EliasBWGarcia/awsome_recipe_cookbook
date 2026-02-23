@@ -1,8 +1,8 @@
 name: Continuous Delivery Deployment to Azure
 
 on:
-  #push:
-    #branches: [ cd ]
+  push:
+    branches: [ cd ]
   pull_request:
     branches: [ cd ]
   workflow_dispatch:
@@ -29,17 +29,14 @@ jobs:
     - name: Build and Push Docker Images
       working-directory: ./src
       run: |
-        docker buildx bake -f docker-compose.prod.yml --push
-
+        docker buildx bake -f docker-compose.prod.yml --set *.platform=linux/amd64,linux/arm64 --push
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     env:
-      # Make sure that the SSH_USER has permission to run docker
       SSH_USER: ${{ secrets.SSH_USER }}
       SSH_HOST: ${{ secrets.SSH_HOST }}
-
 
     steps:
       - name: Add SSH key to runner
@@ -54,7 +51,6 @@ jobs:
         run: |
           echo "GREETING=Hello from Github Action" >> .env
 
-
       - name: Transfer .env file to server
         run: |
           scp -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no .env $SSH_USER@$SSH_HOST:.env
@@ -64,14 +60,14 @@ jobs:
 
       - name: Check Out Repository
         uses: actions/checkout@v2
-    
+
       - name: Transfer Docker compose file to server
         run: |
-          scp -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no src/docker-compose.server.yml $SSH_USER@$SSH_HOST:docker-compose.yml
+          scp -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no src/docker-compose.prod.yml $SSH_USER@$SSH_HOST:docker-compose.yml
         env:
             SSH_USER: ${{ secrets.SSH_USER }}
             SSH_HOST: ${{ secrets.SSH_HOST }}
-    
+
       - name: Deploy to server
         run: |
           ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << "EOF"
