@@ -1,4 +1,4 @@
-name: Continuous Delivery Deployment to Azure
+name: Continuous Deployment 
 
 on:
   push:
