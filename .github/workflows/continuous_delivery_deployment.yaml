@@ -1,10 +1,10 @@
-name: Continuous Delivery Deployment
+name: Continuous Delivery Deployment to Azure
 
 on:
   #push:
     #branches: [ cd ]
-  #pull_request:
-    #branches: [ cd ]
+  pull_request:
+    branches: [ cd ]
   workflow_dispatch:
 
 env:
