@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  CR_PAT: ${{ secrets.CR_PAT }}
+  CR_PAT: ${{ secrets.CR_PAT_2 }}
   DOCKER_GITHUB_USERNAME: ${{ secrets.DOCKER_GITHUB_USERNAME }}
   ENV_GREETING: ${{ secrets.ENV_GREETING }}
 
@@ -21,7 +21,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      uses: docker/setup-buildx-action@v3
 
     - name: Log in to GitHub Container Registry
       run: echo ${{ env.CR_PAT }} | docker login ghcr.io -u ${{ env.DOCKER_GITHUB_USERNAME }} --password-stdin
