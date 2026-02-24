@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify, render_template
 from flasgger import Swagger
 import sqlite3
 import json
+import os
 
 app = Flask(__name__)
 DATABASE = 'app.db'
@@ -1577,4 +1578,12 @@ def recipe_tags_destroy_TEST(id):
 
 if __name__ == '__main__':
     init_db()
-    app.run(host='0.0.0.0', port=3010, debug=True)
+    app.run()
+
+"""
+    if os.getenv('FLASK_ENV') == 'development':
+        app.run(host='0.0.0.0', port=8080, debug=True)
+    else:
+        # In production, Gunicorn will be used, so this block can be empty or just print a message
+        print("Use Gunicorn to run the app in production.")
+"""

@@ -1,11 +1,9 @@
-version: '3.8'
-
 services:
-  web:
+  awesome_recipe_cookbook_development:
     build: 
       dockerfile: Dockerfile.dev
     ports:
-      - "3000:3000"
+      - "8080:8080"
     volumes:
       - .:/app
     environment:
