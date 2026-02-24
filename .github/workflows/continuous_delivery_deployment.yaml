@@ -32,48 +32,39 @@ jobs:
         docker buildx bake -f docker-compose.prod.yml --set *.platform=linux/amd64,linux/arm64 --push
 
   deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      SSH_USER: ${{ secrets.SSH_USER }}
-      SSH_HOST: ${{ secrets.SSH_HOST_DEP }}
+  needs: build
+  runs-on: ubuntu-latest
+  env:
+    SSH_USER: ${{ secrets.SSH_USER }}
+    SSH_HOST: ${{ secrets.SSH_HOST_DEP }}
 
-    steps:
-      - name: Add SSH key to runner
-        run: |
-          mkdir -p ~/.ssh/
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/ssh_key
-          chmod 600 ~/.ssh/ssh_key
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  steps:
+    - name: Add SSH key to runner
+      run: |
+        mkdir -p ~/.ssh/
+        echo "$SSH_PRIVATE_KEY" > ~/.ssh/ssh_key
+        chmod 600 ~/.ssh/ssh_key
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Create .env file
-        run: |
-          echo "GREETING=Hello from Github Action" >> .env
+    - name: Create .env file
+      run: |
+        echo "GREETING=Hello from Github Action" >> .env
 
-      - name: Transfer .env file to server
-        run: |
-          scp -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no .env $SSH_USER@$SSH_HOST_DEP:.env
-        env:
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST_DEP }}
+    - name: Transfer .env file to server
+      run: |
+        scp -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no .env $SSH_USER@$SSH_HOST:.env
 
-      - name: Check Out Repository
-        uses: actions/checkout@v2
+    - name: Check Out Repository
+      uses: actions/checkout@v6
 
-      - name: Transfer Docker compose file to server
-        run: |
-          scp -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no src/docker-compose.prod.yml $SSH_USER@$SSH_HOST_DEP:docker-compose.yml
-        env:
-            SSH_USER: ${{ secrets.SSH_USER }}
-            SSH_HOST: ${{ secrets.SSH_HOST_DEP }}
+    - name: Transfer Docker compose file to server
+      run: |
+        scp -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no src/docker-compose.prod.yml $SSH_USER@$SSH_HOST:docker-compose.yml
 
-      - name: Deploy to server
-        run: |
-          ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEP << "EOF"
-            sudo docker compose pull
-            sudo docker compose up -d
-          EOF
-        env:
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST_DEP }}
+    - name: Deploy to server
+      run: |
+        ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << "EOF"
+          sudo docker compose pull
+          sudo docker compose up -d
+        EOF
