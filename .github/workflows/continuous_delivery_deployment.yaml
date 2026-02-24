@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SSH_USER: ${{ secrets.SSH_USER }}
-      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_HOST: ${{ secrets.SSH_HOST_DEP }}
 
     steps:
       - name: Add SSH key to runner
@@ -53,27 +53,27 @@ jobs:
 
       - name: Transfer .env file to server
         run: |
-          scp -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no .env $SSH_USER@$SSH_HOST:.env
+          scp -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no .env $SSH_USER@$SSH_HOST_DEP:.env
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_HOST: ${{ secrets.SSH_HOST_DEP }}
 
       - name: Check Out Repository
         uses: actions/checkout@v2
 
       - name: Transfer Docker compose file to server
         run: |
-          scp -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no src/docker-compose.prod.yml $SSH_USER@$SSH_HOST:docker-compose.yml
+          scp -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no src/docker-compose.prod.yml $SSH_USER@$SSH_HOST_DEP:docker-compose.yml
         env:
             SSH_USER: ${{ secrets.SSH_USER }}
-            SSH_HOST: ${{ secrets.SSH_HOST }}
+            SSH_HOST: ${{ secrets.SSH_HOST_DEP }}
 
       - name: Deploy to server
         run: |
-          ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << "EOF"
+          ssh -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEP << "EOF"
             sudo docker compose pull
             sudo docker compose up -d
           EOF
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_HOST: ${{ secrets.SSH_HOST_DEP }}
