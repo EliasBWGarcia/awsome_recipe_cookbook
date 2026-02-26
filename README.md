@@ -9,6 +9,7 @@ You're currently on the **CD** branch, which demonstrates continuous delivery an
 
 [![Docker Build](https://github.com/cookbookio/awsome_recipe_cookbook/actions/workflows/continuous_delivery.yml/badge.svg?branch=continuous_delivery)](https://github.com/cookbookio/awsome_recipe_cookbook/actions/workflows/continuous_delivery.yml)
 
+[![Continuous  Deployment](https://github.com/cookbookio/awsome_recipe_cookbook/actions/workflows/continuous_delivery_deployment.yaml/badge.svg?branch=continuous_deployment)](https://github.com/cookbookio/awsome_recipe_cookbook/actions/workflows/continuous_delivery_deployment.yaml)
 ---
 
 ## Get started
