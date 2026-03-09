@@ -26,10 +26,16 @@ jobs:
         python-version: '3.11'
 
     - name: Install Ruff
-      run: pip install ruff
+      run: pip install ruff, pyright
 
-    - name: Run Ruff
+    - name: Run Ruff check
       run: ruff check .
+
+    - name: Run Ruff reformatter
+      run: ruff format --check .
+
+    - name: Run Ruff reformatter
+      run: pyright
 
   build:
     runs-on: ubuntu-latest
