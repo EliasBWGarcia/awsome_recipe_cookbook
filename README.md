@@ -12,24 +12,7 @@ You're currently on the **linting** branch, which demonstrates continuous integr
 
 ## Get started
 
-Run the following command to start the application:
-
-```bash
-$ docker-compose -f docker-compose.dev.yml up --build
-```
-
-You can now access the application at `http://localhost:8080`.
-
----
-
-## Github Packages
-
-There are many container registries to choose from. This repository uses the Github Packages:
-
-https://github.com/features/packages
-
-The workflow can be modified to deploy to another container registry such as Docker Hub etc. 
-
+Look at the linting.yml file and get an idea of how linting is used in this repository.
 ---
 ## ⚠️  SECURITY VULNERABILITIES - EDUCATIONAL PURPOSE ONLY ⚠️
 ---
