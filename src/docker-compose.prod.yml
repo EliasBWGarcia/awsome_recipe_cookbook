@@ -1,6 +1,6 @@
 services:
   awesome_recipe_cookbook-production:
-    image: ghcr.io/cookbookio/awsome_recipe_cookbook:latest
+    image: ghcr.io/cookbookio/awsome_recipe_cookbook_linting:latest
     build:
       context: .
       dockerfile: Dockerfile.prod
