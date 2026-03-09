@@ -3,11 +3,11 @@ Demo DevOps repository for use in teachings in It-architechture, cloud and agil 
 
 This is the "Awsome recipe cookbook" repository. It is not meant for production as it contains several security vulnerabilities and problematic parts on purpose. 
 
-## Continnouos Delivery, Continnouos Deployment (CD) branch
+## Software Quality and Linting (linting) branch
 
-You're currently on the **CD** branch, which demonstrates continuous delivery and continuous deployment through github actions, pacgages deployment to Azure VM.
+You're currently on the **linting** branch, which demonstrates continuous integration and and the use of linting tools etc. through github actions.
 
-[![Docker Build](https://github.com/cookbookio/awsome_recipe_cookbook/actions/workflows/continuous_delivery.yml/badge.svg?branch=cd)](https://github.com/cookbookio/awsome_recipe_cookbook/actions/workflows/continuous_delivery.yml) [![Continuous  Deployment](https://github.com/cookbookio/awsome_recipe_cookbook/actions/workflows/continuous_delivery_deployment.yaml/badge.svg?branch=cd)](https://github.com/cookbookio/awsome_recipe_cookbook/actions/workflows/continuous_delivery_deployment.yaml)
+[![linting](https://github.com/cookbookio/awsome_recipe_cookbook/actions/workflows/continuous_delivery.yml/badge.svg?branch=linting)](https://github.com/cookbookio/awsome_recipe_cookbook/actions/workflows/continuous_delivery.yml) 
 ---
 
 ## Get started
