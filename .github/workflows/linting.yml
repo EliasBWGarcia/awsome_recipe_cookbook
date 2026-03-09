@@ -13,8 +13,27 @@ env:
   ENV_GREETING: ${{ secrets.ENV_GREETING }}
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check Out Repository
+      uses: actions/checkout@v6
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Ruff
+      run: pip install ruff
+
+    - name: Run Ruff
+      run: ruff check --fix .
+
   build:
     runs-on: ubuntu-latest
+    needs: lint
 
     steps:
     - name: Check Out Repository
