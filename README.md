@@ -7,7 +7,7 @@ This is the "Awsome recipe cookbook" repository. It is not meant for production 
 
 You're currently on the **linting** branch, which demonstrates continuous integration and and the use of linting tools etc. through github actions.
 
-[![linting](https://github.com/cookbookio/awsome_recipe_cookbook/actions/workflows/continuous_delivery.yml/badge.svg?branch=linting)](https://github.com/cookbookio/awsome_recipe_cookbook/actions/workflows/continuous_delivery.yml) 
+[![linting](https://github.com/cookbookio/awsome_recipe_cookbook/actions/workflows/linting.yml/badge.svg?branch=linting)](https://github.com/cookbookio/awsome_recipe_cookbook/actions/workflows/linting.yml) 
 ---
 
 ## Get started
