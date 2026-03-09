@@ -2,9 +2,9 @@ name: Continuous Delivery
 
 on:
   push:
-    branches: [ cd ]
+    branches: [ linting ]
   pull_request:
-    branches: [ cd ]
+    branches: [ linting ]
   workflow_dispatch:
 
 env:
