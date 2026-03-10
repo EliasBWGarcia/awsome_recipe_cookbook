@@ -168,4 +168,3 @@ ignore/*
 terraform/
 
 .ruff_cache
-
