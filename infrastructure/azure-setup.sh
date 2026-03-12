@@ -1,9 +1,33 @@
 #!/bin/bash
 
-# Azure VM Setup Script for CI/CD Demo
+# Enhanced Azure VM Setup Script for CI/CD Demo
 # This script creates everything needed for the Recipe Cookbook deployment
+# and ensures VM is updated/upgraded after creation
+# Also sets the VM IP address in GitHub secrets
 
 set -e  # Exit on any error
+
+# Parse command line arguments
+NO_COLORS=false
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --help|-h)
+            echo "Usage: $0 [OPTIONS]"
+            echo ""
+            echo "Options:"
+            echo "  --no-colors    Disable colored output"
+            echo "  --help, -h     Show this help message"
+            exit 0
+            ;;
+        --no-colors)
+            NO_COLORS=true
+            shift
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
 
 # Configuration variables - CUSTOMIZE THESE
 RESOURCE_GROUP="recipe-cookbook-rg"
@@ -11,16 +35,16 @@ LOCATION="norwayeast"  # Change to your preferred region (e.g., "eastus", "north
 VM_NAME="recipe-cookbook-vm"
 VM_SIZE="Standard_B1s"  # Change to "Standard_B2s" for better performance
 ADMIN_USERNAME="azureuser"
-SSH_KEY_PATH="$HOME/.ssh/id_rsa.pub"
+SSH_KEY_PATH="$HOME/.ssh/id_rsa.pub"   # Change this path to point at your public key - (your private key should be in the same folder, and should be set in SSH_PRIVATE_KEY on GitHub)
 
-# Colors for output
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-NC='\033[0m' # No Color
+# Disable all color output
+GREEN=''
+YELLOW=''
+RED=''
+NC=''
 
 echo "=========================================="
-echo "Azure VM Setup for Recipe Cookbook"
+echo "Enhanced Azure VM Setup for Recipe Cookbook"
 echo "=========================================="
 echo ""
 
@@ -151,13 +175,41 @@ echo ""
 echo "VM Public IP: ${GREEN}$VM_IP${NC}"
 echo "SSH command: ${YELLOW}ssh $ADMIN_USERNAME@$VM_IP${NC}"
 
-# Test SSH connection
+# Wait for VM to be fully ready
 echo ""
-echo "Testing SSH connection..."
-if ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 "$ADMIN_USERNAME@$VM_IP" "echo 'Connection successful'" &> /dev/null; then
-    echo -e "${GREEN}✅ SSH connection successful${NC}"
+echo "Waiting for VM to be fully ready..."
+sleep 30
+
+# Test SSH connection and update/upgrade VM
+echo ""
+echo "=========================================="
+echo "Connecting to VM and updating system"
+echo "=========================================="
+
+if ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 "$ADMIN_USERNAME@$VM_IP" "
+    set -e
+    echo 'Connected to VM, starting system update...'
+    
+    echo 'Updating package lists...'
+    sudo apt update -y
+    
+    echo 'Upgrading installed packages...'
+    sudo apt upgrade -y
+    
+    echo 'Installing basic utilities...'
+    sudo apt install -y curl wget git unzip
+    
+    echo 'Cleaning up...'
+    sudo apt autoremove -y
+    sudo apt autoclean
+    
+    echo 'System update and upgrade complete!'
+    echo 'VM is ready for Docker installation.'
+"; then
+    echo -e "${GREEN}✅ VM system update and upgrade completed successfully${NC}"
 else
     echo -e "${YELLOW}⚠️  SSH connection failed. VM may still be initializing. Wait a minute and try again.${NC}"
+    exit 1
 fi
 
 # Install Docker on the VM
@@ -209,6 +261,48 @@ ENDSSH
     echo -e "${YELLOW}⚠️  Note: You need to logout and login again for docker group changes to take effect${NC}"
 fi
 
+# Set VM IP in GitHub secrets
+echo ""
+echo "=========================================="
+echo "Setting VM IP in GitHub Secrets"
+echo "=========================================="
+
+# Check if GitHub CLI is installed
+if ! command -v gh &> /dev/null; then
+    echo -e "${YELLOW}⚠️  GitHub CLI is not installed${NC}"
+    echo "Install it from: https://cli.github.com/"
+    echo "Then run: gh auth login"
+    echo ""
+    echo "Manual steps to set GitHub secrets:"
+    echo "1. Navigate to your GitHub repository Settings > Secrets and variables > Actions"
+    echo "2. Add these secrets:"
+    echo "   SSH_USER = $ADMIN_USERNAME"
+    echo "   SSH_HOST = $VM_IP"
+    echo "   SSH_PRIVATE_KEY = Contents of ~/.ssh/id_rsa"
+    echo ""
+    echo "3. Or install GitHub CLI and run this script from your repository directory"
+else
+    # Check if authenticated with GitHub CLI
+    if ! gh auth status &> /dev/null; then
+        echo -e "${YELLOW}⚠️  Not authenticated with GitHub CLI${NC}"
+        echo "Running: gh auth login"
+        gh auth login
+    fi
+    
+    echo "Setting GitHub secrets..."
+    
+    # Set SSH_USER secret
+    echo "$ADMIN_USERNAME" | gh secret set SSH_USER
+    
+    # Set SSH_HOST secret  
+    echo "$VM_IP" | gh secret set SSH_HOST
+    
+    # Set SSH_PRIVATE_KEY secret
+    gh secret set SSH_PRIVATE_KEY < "${SSH_KEY_PATH%.pub}"
+    
+    echo -e "${GREEN}✅ GitHub secrets set successfully${NC}"
+fi
+
 # Summary
 echo ""
 echo "=========================================="
@@ -231,15 +325,10 @@ echo "2. Login to GitHub Container Registry on the VM:"
 echo "   ${YELLOW}docker login ghcr.io -u YOUR_GITHUB_USERNAME${NC}"
 echo "   (Use your CR_PAT token as password)"
 echo ""
-echo "3. Add these secrets to your GitHub repository:"
+echo "3. GitHub secrets have been set automatically:"
 echo "   ${YELLOW}SSH_USER${NC} = $ADMIN_USERNAME"
 echo "   ${YELLOW}SSH_HOST${NC} = $VM_IP"
-echo "   ${YELLOW}SSH_PRIVATE_KEY${NC} = Contents of ~/.ssh/id_rsa"
-echo ""
-echo "4. Quick secret setup with GitHub CLI:"
-echo "   ${YELLOW}echo \"$ADMIN_USERNAME\" | gh secret set SSH_USER${NC}"
-echo "   ${YELLOW}echo \"$VM_IP\" | gh secret set SSH_HOST${NC}"
-echo "   ${YELLOW}gh secret set SSH_PRIVATE_KEY < ~/.ssh/id_rsa${NC}"
+echo "   ${YELLOW}SSH_PRIVATE_KEY${NC} = Your SSH private key"
 echo ""
 echo "=========================================="
 echo ""
