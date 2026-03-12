@@ -189,20 +189,20 @@ echo "=========================================="
 if ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 "$ADMIN_USERNAME@$VM_IP" "
     set -e
     echo 'Connected to VM, starting system update...'
-    
+
     echo 'Updating package lists...'
     sudo apt update -y
-    
+
     echo 'Upgrading installed packages...'
     sudo apt upgrade -y
-    
+
     echo 'Installing basic utilities...'
     sudo apt install -y curl wget git unzip
-    
+
     echo 'Cleaning up...'
     sudo apt autoremove -y
     sudo apt autoclean
-    
+
     echo 'System update and upgrade complete!'
     echo 'VM is ready for Docker installation.'
 "; then
@@ -288,18 +288,18 @@ else
         echo "Running: gh auth login"
         gh auth login
     fi
-    
+
     echo "Setting GitHub secrets..."
-    
+
     # Set SSH_USER secret
     echo "$ADMIN_USERNAME" | gh secret set SSH_USER
-    
-    # Set SSH_HOST secret  
+
+    # Set SSH_HOST secret
     echo "$VM_IP" | gh secret set SSH_HOST
-    
+
     # Set SSH_PRIVATE_KEY secret
     gh secret set SSH_PRIVATE_KEY < "${SSH_KEY_PATH%.pub}"
-    
+
     echo -e "${GREEN}✅ GitHub secrets set successfully${NC}"
 fi
 

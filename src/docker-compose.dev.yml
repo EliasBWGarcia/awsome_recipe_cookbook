@@ -1,6 +1,6 @@
 services:
   awesome_recipe_cookbook_development:
-    build: 
+    build:
       dockerfile: Dockerfile.dev
     ports:
       - "8080:8080"
