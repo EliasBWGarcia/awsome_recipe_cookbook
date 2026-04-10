@@ -1,10 +1,26 @@
 services:
-  awesome_recipe_cookbook_development:
+  backend:
     build:
+      context: ./backend
       dockerfile: Dockerfile.dev
-    ports:
-      - "8080:8080"
     volumes:
-      - .:/app
+      - ./backend:/app
     environment:
       - FLASK_ENV=development
+    networks:
+      - app-network
+
+  nginx:
+    build:
+      context: ./network
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

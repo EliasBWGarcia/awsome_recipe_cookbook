@@ -1,10 +1,26 @@
 services:
-  awesome_recipe_cookbook-production:
-    image: ghcr.io/cookbookio/awsome_recipe_cookbook_linting:latest
+  backend:
+    image: ghcr.io/cookbookio/awsome_recipe_cookbook_proxy:latest
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile.prod
-    ports:
-      - "80:80"
     environment:
       - FLASK_ENV=production
+    networks:
+      - app-network
+
+  nginx:
+    image: ghcr.io/cookbookio/awsome_recipe_cookbook_proxy_nginx:latest
+    build:
+      context: ./network
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

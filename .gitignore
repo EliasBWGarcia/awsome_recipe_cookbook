@@ -168,3 +168,5 @@ ignore/*
 terraform/
 
 .ruff_cache
+
+.claude
