@@ -12,6 +12,12 @@ You're currently on the **proxy** branch, which demonstrates the use of nginx pr
 
 ## Get started
 
+```
+git checkout proxy
+cd src
+docker-compose -f docker-compose.prod.yml up --build
+```
+
 Look at the `/src` directory and the network/backend directories.
 
 ---
