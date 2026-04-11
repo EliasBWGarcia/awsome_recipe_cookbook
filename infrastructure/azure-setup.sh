@@ -125,7 +125,7 @@ echo ""
 az vm create \
     --resource-group "$RESOURCE_GROUP" \
     --name "$VM_NAME" \
-    --image Ubuntu2204 \
+    --image Canonical:0001-com-ubuntu-server-jammy:22_04-lts:latest \
     --size "$VM_SIZE" \
     --admin-username "$ADMIN_USERNAME" \
     --ssh-key-values "$SSH_KEY_PATH" \
