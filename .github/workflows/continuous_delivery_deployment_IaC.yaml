@@ -1,10 +1,10 @@
-name: Continuous Deployment
+name: Continuous Deployment - IaC
 
 on:
   push:
-    branches: [proxy]
+    branches: [IaC]
   pull_request:
-    branches: [proxy]
+    branches: [IaC]
   workflow_dispatch:
 
 env:
