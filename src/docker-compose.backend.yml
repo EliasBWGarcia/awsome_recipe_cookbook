@@ -1,0 +1,7 @@
+services:
+  backend:
+    image: ghcr.io/cookbookio/awsome_recipe_cookbook_proxy:latest
+    environment:
+      - FLASK_ENV=production
+    ports:
+      - "8080:8080"
