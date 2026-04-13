@@ -36,6 +36,7 @@ LOCATION="norwayeast"  # Change to your preferred region (e.g., "eastus", "north
 NGINX_VM_NAME="recipe-cookbook-nginx-vm"
 BACKEND_VM_NAME="recipe-cookbook-backend-vm"
 VM_SIZE="Standard_B1s"  # Change to "Standard_B2s" for better performance
+VM_IMAGE="Canonical:0001-com-ubuntu-server-jammy:22_04-lts:latest"
 ADMIN_USERNAME="azureuser"
 SSH_KEY_PATH="$HOME/.ssh/id_rsa.pub"   # Change this path to point at your public key - (your private key should be in the same folder, and should be set in SSH_PRIVATE_KEY on GitHub)
 VNET_NAME="recipe-cookbook-vnet"
@@ -147,7 +148,7 @@ echo ""
 az vm create \
     --resource-group "$RESOURCE_GROUP" \
     --name "$NGINX_VM_NAME" \
-    --image Canonical:0001-com-ubuntu-server-jammy:22_04-lts:latest \
+    --image "$VM_IMAGE" \
     --size "$VM_SIZE" \
     --admin-username "$ADMIN_USERNAME" \
     --ssh-key-values "$SSH_KEY_PATH" \
@@ -171,7 +172,7 @@ echo ""
 az vm create \
     --resource-group "$RESOURCE_GROUP" \
     --name "$BACKEND_VM_NAME" \
-    --image Canonical:0001-com-ubuntu-server-jammy:22_04-lts:latest \
+    --image "$VM_IMAGE" \
     --size "$VM_SIZE" \
     --admin-username "$ADMIN_USERNAME" \
     --ssh-key-values "$SSH_KEY_PATH" \
