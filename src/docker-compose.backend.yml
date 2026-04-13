@@ -1,6 +1,6 @@
 services:
   backend:
-    image: ghcr.io/cookbookio/awsome_recipe_cookbook_proxy:latest
+    image: ghcr.io/${GITHUB_OWNER}/awsome_recipe_cookbook_proxy:latest
     environment:
       - FLASK_ENV=production
     ports:

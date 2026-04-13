@@ -1,6 +1,6 @@
 services:
   backend:
-    image: ghcr.io/cookbookio/awsome_recipe_cookbook_proxy:latest
+    image: ghcr.io/${GITHUB_OWNER}/awsome_recipe_cookbook_proxy:latest
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
@@ -10,7 +10,7 @@ services:
       - app-network
 
   nginx:
-    image: ghcr.io/cookbookio/awsome_recipe_cookbook_proxy_nginx:latest
+    image: ghcr.io/${GITHUB_OWNER}/awsome_recipe_cookbook_proxy_nginx:latest
     build:
       context: ./network
       dockerfile: Dockerfile

@@ -11,6 +11,8 @@ env:
   CR_PAT: ${{ secrets.CR_PAT }}
   DOCKER_GITHUB_USERNAME: ${{ secrets.DOCKER_GITHUB_USERNAME }}
   ENV_GREETING: ${{ secrets.ENV_GREETING }}
+  # Lowercase owner — GHCR requires lowercase registry paths
+  GITHUB_OWNER: ${{ github.repository_owner }}
 
 jobs:
   build:
@@ -28,7 +30,9 @@ jobs:
       - name: Build and Push Docker Images
         working-directory: ./src
         run: |
-          docker buildx bake -f docker-compose.prod.yml --set *.platform=linux/amd64,linux/arm64 --push
+          GITHUB_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          GITHUB_OWNER=$GITHUB_OWNER docker buildx bake -f docker-compose.prod.yml \
+            --set *.platform=linux/amd64,linux/arm64 --push
 
   deploy-backend:
     needs: build
@@ -48,6 +52,14 @@ jobs:
           chmod 600 ~/.ssh/ssh_key
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Create .env file
+        run: |
+          echo "GITHUB_OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" > .env
+
+      - name: Transfer .env file to backend VM
+        run: |
+          scp -i ~/.ssh/ssh_key -o StrictHostKeyChecking=no .env $SSH_USER@$SSH_HOST:.env
 
       - name: Transfer Docker Compose file to backend VM
         run: |
@@ -79,9 +91,10 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Create .env file with backend private IP
+      - name: Create .env file
         run: |
-          echo "BACKEND_PRIVATE_IP=${{ secrets.BACKEND_PRIVATE_IP }}" > .env
+          echo "GITHUB_OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" > .env
+          echo "BACKEND_PRIVATE_IP=${{ secrets.BACKEND_PRIVATE_IP }}" >> .env
 
       - name: Transfer .env file to nginx VM
         run: |
